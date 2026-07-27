@@ -1,0 +1,64 @@
+{
+  "name": "morning-glow-alarm",
+  "version": "1.0.0",
+  "description": "一款为 Windows 11 设计的桌面悬浮闹钟",
+  "main": "src/main/main.js",
+  "author": "Morning Glow",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "check": "node --check src/main/main.js && node --check src/main/store.js && node --check src/main/preload.js && node --check src/shared/scheduler.js && node --check src/renderer/app.js && node --check src/renderer/ring.js",
+    "dist:win": "electron-builder --win nsis portable",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "43.2.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.morningglow.alarm",
+    "productName": "晨光闹钟",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "${productName}-安装版-${version}-${arch}.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "晨光闹钟",
+      "installerLanguages": [
+        "zh_CN"
+      ],
+      "language": "2052"
+    },
+    "portable": {
+      "artifactName": "${productName}-便携版-${version}-${arch}.${ext}"
+    }
+  }
+}
