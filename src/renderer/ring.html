@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+    <title>闹钟响了</title>
+    <link rel="stylesheet" href="ring.css">
+  </head>
+  <body>
+    <div class="ring-window">
+      <div class="ring-drag"></div>
+      <div class="halo halo-one"></div>
+      <div class="halo halo-two"></div>
+
+      <div class="alarm-visual" aria-hidden="true">
+        <span class="pulse pulse-one"></span>
+        <span class="pulse pulse-two"></span>
+        <div class="bell-disc">
+          <svg viewBox="0 0 64 64">
+            <path d="M17 28c0-10 6-17 15-17s15 7 15 17c0 14 6 15 6 18H11c0-3 6-4 6-18Z"/>
+            <path d="M26 52c1 3 3 5 6 5s5-2 6-5M15 12 8 19M49 12l7 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <span class="ring-kicker">IT'S TIME</span>
+      <div class="ring-time" id="ringTime">08:00</div>
+      <h1 id="ringLabel">起床啦</h1>
+      <p id="ringMessage">新的一天已经准备好了</p>
+
+      <div class="ring-actions">
+        <button class="snooze-button" id="snoozeButton">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2-5M5 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+          <span id="snoozeLabel">再睡 5 分钟</span>
+        </button>
+        <button class="stop-button" id="stopButton">停止闹钟</button>
+      </div>
+      <span class="ring-tip">按空格键停止 · 按 S 稍后提醒</span>
+    </div>
+    <script src="ring.js"></script>
+  </body>
+</html>

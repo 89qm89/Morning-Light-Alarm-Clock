@@ -1,0 +1,239 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI Variable", "Segoe UI", "Microsoft YaHei UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: #10162a;
+  color: #f8f8ff;
+}
+
+button {
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 2px solid #a995ff;
+  outline-offset: 3px;
+}
+
+svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.ring-window {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 43px 48px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    radial-gradient(circle at 50% 15%, rgba(149, 125, 255, 0.25), transparent 31%),
+    linear-gradient(155deg, #161d35, #0b1020);
+}
+
+.ring-drag {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 34px;
+  -webkit-app-region: drag;
+}
+
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.18;
+}
+
+.halo-one {
+  top: -100px;
+  left: -80px;
+  width: 250px;
+  height: 250px;
+  background: #866df5;
+}
+
+.halo-two {
+  right: -80px;
+  bottom: -100px;
+  width: 260px;
+  height: 260px;
+  background: #e578c4;
+}
+
+.alarm-visual {
+  position: relative;
+  display: grid;
+  width: 154px;
+  height: 154px;
+  flex: 0 0 auto;
+  margin-bottom: 13px;
+  place-items: center;
+}
+
+.pulse {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(171, 151, 255, 0.28);
+  border-radius: 50%;
+  animation: pulse 2.2s ease-out infinite;
+}
+
+.pulse-two {
+  animation-delay: 1.1s;
+}
+
+.bell-disc {
+  z-index: 1;
+  display: grid;
+  width: 104px;
+  height: 104px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 25%, rgba(255, 255, 255, 0.24), transparent 30%),
+    linear-gradient(145deg, rgba(150, 127, 251, 0.88), rgba(103, 78, 208, 0.62));
+  box-shadow: 0 22px 55px rgba(86, 57, 190, 0.35);
+  animation: bell 1.2s ease-in-out infinite;
+}
+
+.bell-disc svg {
+  width: 57px;
+  height: 57px;
+  stroke-width: 2;
+}
+
+.ring-kicker {
+  color: #a995ff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+
+.ring-time {
+  margin: 5px 0 0;
+  font-size: 62px;
+  font-weight: 250;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -3px;
+  line-height: 1;
+}
+
+h1 {
+  margin: 13px 0 5px;
+  font-size: 20px;
+  font-weight: 620;
+}
+
+p {
+  margin: 0;
+  color: #8993ad;
+  font-size: 11px;
+}
+
+.ring-actions {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.ring-actions button {
+  display: flex;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 620;
+  transition: 160ms ease;
+}
+
+.ring-actions button:hover {
+  filter: brightness(1.09);
+  transform: translateY(-1px);
+}
+
+.snooze-button {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.snooze-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.stop-button {
+  background: linear-gradient(135deg, #907bf6, #c178e6);
+  box-shadow: 0 12px 30px rgba(130, 86, 219, 0.28);
+}
+
+.ring-tip {
+  margin-top: auto;
+  color: #59637d;
+  font-size: 9px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.65);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes bell {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-5deg);
+  }
+  20% {
+    transform: rotate(5deg);
+  }
+  30% {
+    transform: rotate(-3deg);
+  }
+  40% {
+    transform: rotate(3deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
