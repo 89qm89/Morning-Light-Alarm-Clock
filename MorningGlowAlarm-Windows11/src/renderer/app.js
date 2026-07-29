@@ -366,7 +366,7 @@ function bindEvents() {
   $('#cancelButton').addEventListener('click', closeModal);
   $('#alarmForm').addEventListener('submit', saveAlarm);
   $('#quickCommandForm').addEventListener('submit', handleQuickCommand);
-  $('.quick-preset').forEach((button) => {
+  $$('.quick-preset').forEach((button) => {
     button.addEventListener('click', () => handleQuickPreset(button.dataset.quick));
   });
   $('#openUpdatesButton').addEventListener('click', async () => {
