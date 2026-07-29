@@ -64,21 +64,45 @@ jobs:
     steps:
       - name: Checkout version metadata
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Verify version number changed
+        id: version
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          package_path='MorningGlowAlarm-Windows11/package.json'
+          current=$(node -p "require('./MorningGlowAlarm-Windows11/package.json').version")
+          git show "${BEFORE_SHA}:${package_path}" > /tmp/previous-package.json
+          previous=$(node -p "require('/tmp/previous-package.json').version")
+          echo "current=${current}" >> "$GITHUB_OUTPUT"
+          if [ "$current" = "$previous" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Version unchanged; release upload will be skipped."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Version changed from $previous to $current."
+          fi
 
       - name: Download verified Windows builds
+        if: steps.version.outputs.changed == 'true'
         uses: actions/download-artifact@v4
         with:
           name: Morning-Glow-Alarm-Windows
           path: release-assets
 
       - name: Create or update release
+        if: steps.version.outputs.changed == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.current }}
         run: |
           set -euo pipefail
-          version=$(node -p "require('./MorningGlowAlarm-Windows11/package.json').version")
-          tag="v${version}"
+          tag="v${VERSION}"
           mapfile -d '' files < <(find release-assets -maxdepth 1 -type f -name '*.exe' -print0)
           if [ "${#files[@]}" -eq 0 ]; then
             echo "No Windows EXE files found"
