@@ -195,11 +195,14 @@
           </div>
           <div class="about-copy">
             <span>关于与更新</span>
-            <strong>晨光闹钟 <i id="appVersion">v1.2.1</i></strong>
-            <p>检查新版本时会跳转到安全的 GitHub 发布页面。</p>
+            <strong>晨光闹钟 <i id="appVersion">v1.3.0</i></strong>
+            <p id="updateDescription">启动后会自动检查新版本，并保留你的闹钟数据。</p>
+            <div class="update-progress hidden" id="updateProgress" aria-hidden="true">
+              <span id="updateProgressBar"></span>
+            </div>
           </div>
           <button class="update-button" id="openUpdatesButton" type="button">
-            前往更新页面
+            <span id="updateButtonLabel">检查更新</span>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10v10M19 5 8 16"/><path d="M15 19H5V9"/></svg>
           </button>
         </section>

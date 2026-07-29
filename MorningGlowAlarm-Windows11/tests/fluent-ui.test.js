@@ -28,13 +28,13 @@ test('new installations default to the Fluent blue accent', () => {
   assert.match(renderer, /state\.settings\.accent \|\| 'blue'/);
 });
 
-test('release metadata is synchronized at v1.2.1', () => {
+test('release metadata is synchronized at v1.3.0', () => {
   const packageJson = JSON.parse(read('package.json'));
   const packageLock = JSON.parse(read('package-lock.json'));
   const html = read('src/renderer/index.html');
 
-  assert.equal(packageJson.version, '1.2.1');
-  assert.equal(packageLock.version, '1.2.1');
-  assert.equal(packageLock.packages[''].version, '1.2.1');
-  assert.match(html, /v1\.2\.1/);
+  assert.equal(packageJson.version, '1.3.0');
+  assert.equal(packageLock.version, '1.3.0');
+  assert.equal(packageLock.packages[''].version, '1.3.0');
+  assert.match(html, /v1\.3\.0/);
 });

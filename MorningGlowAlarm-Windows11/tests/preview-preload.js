@@ -47,5 +47,22 @@ contextBridge.exposeInMainWorld('alarmAPI', {
   updateSettings: async () => sampleState,
   setWidgetMode: async () => true,
   windowAction: async () => true,
-  onStateChanged: () => () => {}
+  getAppInfo: async () => ({ version: '1.3.0', packaged: false }),
+  getUpdateState: async () => ({
+    status: 'unsupported',
+    message: '预览模式不会执行自动更新',
+    version: null,
+    percent: 0,
+    manualUrl: 'https://github.com/89qm89/Morning-Light-Alarm-Clock/releases'
+  }),
+  checkForUpdates: async () => ({
+    status: 'up-to-date',
+    message: '当前已经是最新版本',
+    version: null,
+    percent: 0
+  }),
+  installUpdate: async () => false,
+  openExternal: async () => true,
+  onStateChanged: () => () => {},
+  onUpdateStatus: () => () => {}
 });
