@@ -1,6 +1,6 @@
 {
   "name": "morning-glow-alarm",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "一款为 Windows 11 设计的桌面悬浮闹钟",
   "main": "src/main/main.js",
   "author": "Morning Glow",
