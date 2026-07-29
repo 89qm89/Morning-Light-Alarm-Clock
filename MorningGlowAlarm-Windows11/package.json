@@ -46,7 +46,7 @@
       ]
     },
     "nsis": {
-      "artifactName": "${productName}-安装版-${version}-${arch}.${ext}",
+      "artifactName": "Morning-Glow-Alarm-Setup-${version}-${arch}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
@@ -58,7 +58,7 @@
       "language": "2052"
     },
     "portable": {
-      "artifactName": "${productName}-便携版-${version}-${arch}.${ext}"
+      "artifactName": "Morning-Glow-Alarm-Portable-${version}-${arch}.${ext}"
     }
   }
 }
