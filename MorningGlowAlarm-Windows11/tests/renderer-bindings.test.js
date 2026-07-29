@@ -22,4 +22,6 @@ test('primary navigation controls keep their click bindings', () => {
   assert.match(rendererSource, /#openUpdatesButton[\s\S]*?addEventListener\('click'/);
   assert.match(rendererSource, /\.accent-dot[\s\S]*?addEventListener\('click'/);
   assert.match(rendererSource, /\.nav-item[\s\S]*?addEventListener\('click'/);
+  assert.match(rendererSource, /#closeButton[\s\S]*?addEventListener\('click'/);
+  assert.match(rendererSource, /\.delete-alarm[\s\S]*?alarmList[\s\S]*?addEventListener\('click'/);
 });
