@@ -3,6 +3,7 @@
 let alarm = null;
 let audioContext = null;
 let soundTimer = null;
+let ringStartedAt = 0;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -12,8 +13,11 @@ function playTone(frequency, start, duration, volume = 0.08) {
   const gain = audioContext.createGain();
   oscillator.type = 'sine';
   oscillator.frequency.setValueAtTime(frequency, start);
+  const elapsed = ringStartedAt ? Date.now() - ringStartedAt : 0;
+  const ramp = Math.min(1, 0.32 + (elapsed / 90_000) * 0.68);
+  const targetVolume = Math.max(0.001, volume * ramp);
   gain.gain.setValueAtTime(0.001, start);
-  gain.gain.exponentialRampToValueAtTime(volume, start + 0.04);
+  gain.gain.exponentialRampToValueAtTime(targetVolume, start + 0.04);
   gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
   oscillator.connect(gain);
   gain.connect(audioContext.destination);
@@ -42,6 +46,7 @@ function playPattern() {
 }
 
 function startSound() {
+  ringStartedAt = Date.now();
   playPattern();
   soundTimer = setInterval(playPattern, 2600);
 }

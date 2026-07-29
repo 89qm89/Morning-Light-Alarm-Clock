@@ -2,6 +2,9 @@ name: Build Windows App
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
   push:
     tags:
       - "v*"
@@ -13,6 +16,10 @@ jobs:
     permissions:
       contents: read
 
+    defaults:
+      run:
+        working-directory: MorningGlowAlarm-Windows11
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,6 +29,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: MorningGlowAlarm-Windows11/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -29,13 +37,16 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Check JavaScript syntax
+        run: npm run check
+
       - name: Build installer and portable app
         run: npm run dist:win -- --publish never
 
       - name: Upload Windows builds
         uses: actions/upload-artifact@v4
         with:
-          name: Morning-Glow-Alarm-Windows
-          path: release/*.exe
+          name: Morning-Glow-Alarm-Windows-v1.1.0
+          path: MorningGlowAlarm-Windows11/release/*.exe
           if-no-files-found: error
           retention-days: 30

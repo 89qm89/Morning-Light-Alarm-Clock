@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('alarmAPI', {
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
   setWidgetMode: (enabled) => ipcRenderer.invoke('window:widget', enabled),
   windowAction: (action) => ipcRenderer.invoke('window:action', action),
+  getAppInfo: () => ipcRenderer.invoke('app:info'),
+  openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
   ringAction: (action, alarm) => ipcRenderer.invoke('ring:action', { action, alarm }),
   onStateChanged: (callback) => {
     const handler = (_event, state) => callback(state);
