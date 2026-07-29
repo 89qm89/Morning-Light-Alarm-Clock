@@ -133,10 +133,10 @@ function renderState(state) {
   list.classList.toggle('hidden', state.alarms.length === 0);
   $('#alwaysOnTopToggle').checked = Boolean(state.settings.alwaysOnTop);
   $('#launchAtLoginToggle').checked = Boolean(state.settings.launchAtLogin);
-  document.body.dataset.accent = state.settings.accent || 'mono';
+  document.body.dataset.accent = state.settings.accent || 'blue';
   document.body.classList.toggle('widget-mode', Boolean(state.settings.widgetMode));
   $$('.accent-dot').forEach((button) => {
-    button.classList.toggle('active', button.dataset.accent === (state.settings.accent || 'mono'));
+    button.classList.toggle('active', button.dataset.accent === (state.settings.accent || 'blue'));
   });
   renderNextAlarm();
 }
