@@ -30,4 +30,5 @@ test('release workflow publishes the version-specific notes file', () => {
 
   assert.match(workflow, /Prepare release notes/);
   assert.match(workflow, /--notes-file release-notes\.md/);
+  assert.match(workflow, /release\/latest\.yml/);
 });

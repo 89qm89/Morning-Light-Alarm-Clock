@@ -47,11 +47,16 @@ jobs:
       - name: Build installer and portable app
         run: npm run dist:win -- --publish never
 
+      - name: Generate automatic update metadata
+        run: node scripts/generate-update-info.js
+
       - name: Upload Windows builds
         uses: actions/upload-artifact@v4
         with:
           name: Morning-Glow-Alarm-Windows
-          path: MorningGlowAlarm-Windows11/release/*.exe
+          path: |
+            MorningGlowAlarm-Windows11/release/*.exe
+            MorningGlowAlarm-Windows11/release/latest.yml
           if-no-files-found: error
           retention-days: 30
 
@@ -88,12 +93,14 @@ jobs:
           tag="v${current}"
           expected_setup="Morning-Glow-Alarm-Setup-${current}-x64.exe"
           expected_portable="Morning-Glow-Alarm-Portable-${current}-x64.exe"
+          expected_update_info="latest.yml"
           release_assets=$(gh release view "$tag" --repo "${{ github.repository }}" --json assets --jq '.assets[].name' 2>/dev/null || true)
 
           echo "current=${current}" >> "$GITHUB_OUTPUT"
           if [ "$current" != "$previous" ] \
             || ! grep -Fxq "$expected_setup" <<< "$release_assets" \
-            || ! grep -Fxq "$expected_portable" <<< "$release_assets"; then
+            || ! grep -Fxq "$expected_portable" <<< "$release_assets" \
+            || ! grep -Fxq "$expected_update_info" <<< "$release_assets"; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Release $tag is new or incomplete; publishing verified builds."
           else
@@ -134,11 +141,13 @@ jobs:
         run: |
           set -euo pipefail
           tag="v${VERSION}"
-          mapfile -d '' files < <(find release-assets -maxdepth 1 -type f -name '*.exe' -print0)
-          if [ "${#files[@]}" -ne 2 ]; then
-            echo "Expected exactly two Windows EXE files, found ${#files[@]}"
+          mapfile -d '' exe_files < <(find release-assets -maxdepth 1 -type f -name '*.exe' -print0)
+          update_info='release-assets/latest.yml'
+          if [ "${#exe_files[@]}" -ne 2 ] || [ ! -f "$update_info" ]; then
+            echo "Expected two Windows EXE files and latest.yml"
             exit 1
           fi
+          files=("${exe_files[@]}" "$update_info")
 
           if gh release view "$tag" --repo "${{ github.repository }}" >/dev/null 2>&1; then
             gh release edit "$tag" \

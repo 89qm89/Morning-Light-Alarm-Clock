@@ -18,6 +18,7 @@ const {
   nextAlarm,
   shouldFire
 } = require('../shared/scheduler');
+const { createUpdateService } = require('./updater');
 
 let mainWindow = null;
 let ringWindow = null;
@@ -26,6 +27,7 @@ let store = null;
 let isQuitting = false;
 let schedulerTimer = null;
 let currentRingingAlarm = null;
+let updateService = null;
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
@@ -129,6 +131,12 @@ function broadcastState() {
     mainWindow.webContents.send('state:changed', payload);
   }
   return payload;
+}
+
+function broadcastUpdateState(state) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('updates:status', state);
+  }
 }
 
 function setWidgetMode(enabled) {
@@ -315,6 +323,10 @@ function registerIpc() {
     packaged: app.isPackaged
   }));
 
+  ipcMain.handle('updates:get-state', () => updateService.getState());
+  ipcMain.handle('updates:check', () => updateService.check());
+  ipcMain.handle('updates:install', () => updateService.install());
+
   ipcMain.handle('app:open-external', async (_event, input) => {
     const url = String(input || '');
     const allowedPrefix = 'https://github.com/89qm89/Morning-Light-Alarm-Clock/releases';
@@ -361,9 +373,16 @@ app.on('second-instance', showMainWindow);
 
 app.whenReady().then(() => {
   store = new Store(path.join(app.getPath('userData'), 'alarms.json'));
+  updateService = createUpdateService({
+    packaged: app.isPackaged,
+    platform: process.platform,
+    portable: Boolean(process.env.PORTABLE_EXECUTABLE_DIR),
+    notify: broadcastUpdateState
+  });
   registerIpc();
   createMainWindow();
   createTray();
+  updateService.start();
   schedulerTimer = setInterval(schedulerTick, 1_000);
 
   app.on('activate', showMainWindow);
@@ -371,6 +390,7 @@ app.whenReady().then(() => {
 
 app.on('before-quit', () => {
   isQuitting = true;
+  updateService?.stop();
   if (schedulerTimer) clearInterval(schedulerTimer);
 });
 

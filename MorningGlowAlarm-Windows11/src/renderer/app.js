@@ -17,6 +17,12 @@ let appState = {
 let selectedDays = [];
 let toastTimer = null;
 let toastActionCleanup = null;
+let updateState = {
+  status: 'idle',
+  message: '可以检查是否有新版本',
+  version: null,
+  percent: 0
+};
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -359,6 +365,63 @@ function showToast(message, action = null) {
   }, action ? 5200 : 2400);
 }
 
+function renderUpdateState(nextState) {
+  const previousStatus = updateState.status;
+  updateState = { ...updateState, ...nextState };
+
+  const button = $('#openUpdatesButton');
+  const label = $('#updateButtonLabel');
+  const progress = $('#updateProgress');
+  const progressBar = $('#updateProgressBar');
+  const active = ['checking', 'available', 'downloading'].includes(updateState.status);
+  const labels = {
+    idle: '检查更新',
+    checking: '正在检查…',
+    available: '准备下载…',
+    downloading: `下载 ${updateState.percent || 0}%`,
+    ready: '更新并重启',
+    'up-to-date': '再次检查',
+    error: '重新检查',
+    unsupported: '前往下载页面'
+  };
+
+  label.textContent = labels[updateState.status] || '检查更新';
+  $('#updateDescription').textContent = updateState.message;
+  button.disabled = active;
+  button.classList.toggle('ready', updateState.status === 'ready');
+  progress.classList.toggle('hidden', !['available', 'downloading'].includes(updateState.status));
+  progressBar.style.width = `${updateState.percent || 0}%`;
+
+  if (updateState.status === 'ready' && previousStatus !== 'ready') {
+    showToast(`v${updateState.version} 已下载完成，点击“更新并重启”即可覆盖旧版本`);
+  }
+}
+
+async function handleUpdateButton() {
+  if (updateState.status === 'ready') {
+    $('#openUpdatesButton').disabled = true;
+    $('#updateButtonLabel').textContent = '正在安装…';
+    $('#updateDescription').textContent = '即将关闭软件并自动覆盖旧版本';
+    const started = await window.alarmAPI.installUpdate();
+    if (!started) {
+      $('#openUpdatesButton').disabled = false;
+      renderUpdateState(await window.alarmAPI.getUpdateState());
+      showToast('更新安装暂时无法启动');
+    }
+    return;
+  }
+
+  if (updateState.status === 'unsupported') {
+    const opened = await window.alarmAPI.openExternal(
+      updateState.manualUrl || 'https://github.com/89qm89/Morning-Light-Alarm-Clock/releases'
+    );
+    showToast(opened ? '已在浏览器打开下载页面' : '下载页面打开失败');
+    return;
+  }
+
+  renderUpdateState(await window.alarmAPI.checkForUpdates());
+}
+
 function bindEvents() {
   $('#addAlarmButton').addEventListener('click', () => openModal());
   $('#emptyAddButton').addEventListener('click', () => openModal());
@@ -369,12 +432,7 @@ function bindEvents() {
   $$('.quick-preset').forEach((button) => {
     button.addEventListener('click', () => handleQuickPreset(button.dataset.quick));
   });
-  $('#openUpdatesButton').addEventListener('click', async () => {
-    const opened = await window.alarmAPI.openExternal(
-      'https://github.com/89qm89/Morning-Light-Alarm-Clock/releases'
-    );
-    showToast(opened ? '已在浏览器打开更新页面' : '更新页面打开失败');
-  });
+  $('#openUpdatesButton').addEventListener('click', handleUpdateButton);
   $('#alarmModal').addEventListener('click', (event) => {
     if (event.target === $('#alarmModal')) closeModal();
   });
@@ -461,6 +519,8 @@ async function init() {
   const appInfo = await window.alarmAPI.getAppInfo();
   $('#appVersion').textContent = `v${appInfo.version}`;
   window.alarmAPI.onStateChanged(renderState);
+  window.alarmAPI.onUpdateStatus(renderUpdateState);
+  renderUpdateState(await window.alarmAPI.getUpdateState());
   updateClock();
   setInterval(updateClock, 1_000);
 }

@@ -11,12 +11,20 @@ contextBridge.exposeInMainWorld('alarmAPI', {
   setWidgetMode: (enabled) => ipcRenderer.invoke('window:widget', enabled),
   windowAction: (action) => ipcRenderer.invoke('window:action', action),
   getAppInfo: () => ipcRenderer.invoke('app:info'),
+  getUpdateState: () => ipcRenderer.invoke('updates:get-state'),
+  checkForUpdates: () => ipcRenderer.invoke('updates:check'),
+  installUpdate: () => ipcRenderer.invoke('updates:install'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', url),
   ringAction: (action, alarm) => ipcRenderer.invoke('ring:action', { action, alarm }),
   onStateChanged: (callback) => {
     const handler = (_event, state) => callback(state);
     ipcRenderer.on('state:changed', handler);
     return () => ipcRenderer.removeListener('state:changed', handler);
+  },
+  onUpdateStatus: (callback) => {
+    const handler = (_event, state) => callback(state);
+    ipcRenderer.on('updates:status', handler);
+    return () => ipcRenderer.removeListener('updates:status', handler);
   },
   onAlarmRing: (callback) => {
     const handler = (_event, alarm) => callback(alarm);
