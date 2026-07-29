@@ -57,6 +57,10 @@
             <span>我的闹钟</span>
             <span class="count-badge" id="alarmCount">0</span>
           </button>
+          <button class="nav-item" data-scroll="aboutSection">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>
+            <span>设置与更新</span>
+          </button>
         </nav>
 
         <div class="sidebar-spacer"></div>
@@ -90,6 +94,7 @@
             <button class="accent-dot violet active" data-accent="violet" aria-label="紫色"></button>
             <button class="accent-dot blue" data-accent="blue" aria-label="蓝色"></button>
             <button class="accent-dot rose" data-accent="rose" aria-label="粉色"></button>
+            <button class="accent-dot mono" data-accent="mono" aria-label="曜石黑白"></button>
           </div>
         </div>
       </aside>
@@ -128,6 +133,34 @@
           <div class="next-countdown" id="nextCountdown">—</div>
         </section>
 
+        <section class="quick-panel" id="quickPanel">
+          <div class="quick-heading">
+            <div>
+              <span class="section-kicker">QUICK CREATE</span>
+              <h2>一句话，马上设好</h2>
+            </div>
+            <span class="local-badge">仅在本机处理</span>
+          </div>
+          <form class="quick-command" id="quickCommandForm">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <input id="quickCommandInput" type="text" maxlength="48" autocomplete="off"
+              placeholder="例如：明早7点叫我起床">
+            <button type="submit">创建</button>
+          </form>
+          <div class="quick-presets" aria-label="快捷闹钟">
+            <button type="button" class="quick-preset" data-quick="tomorrow-0700">
+              <span>明早</span><strong>07:00</strong>
+            </button>
+            <button type="button" class="quick-preset" data-quick="minutes-30">
+              <span>倒计时</span><strong>30 分钟后</strong>
+            </button>
+            <button type="button" class="quick-preset" data-quick="workdays-0730">
+              <span>工作日</span><strong>07:30</strong>
+            </button>
+          </div>
+          <p class="quick-hint" id="quickHint">支持“明天8点开会”“每天7:30起床”“30分钟后休息”</p>
+        </section>
+
         <section class="alarm-section" id="alarmSection">
           <div class="section-heading">
             <div>
@@ -154,6 +187,21 @@
             <p>添加第一个闹钟，它会一直安静守候到约定时间。</p>
             <button class="ghost-button" id="emptyAddButton">创建第一个闹钟</button>
           </div>
+        </section>
+
+        <section class="about-card" id="aboutSection">
+          <div class="about-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"/><path d="M12 8v4l3 2"/></svg>
+          </div>
+          <div class="about-copy">
+            <span>关于与更新</span>
+            <strong>晨光闹钟 <i id="appVersion">v1.1.0</i></strong>
+            <p>检查新版本时会跳转到安全的 GitHub 发布页面。</p>
+          </div>
+          <button class="update-button" id="openUpdatesButton" type="button">
+            前往更新页面
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5h10v10M19 5 8 16"/><path d="M15 19H5V9"/></svg>
+          </button>
         </section>
 
         <footer class="app-footer">
