@@ -10,6 +10,7 @@ on:
       - main
     paths:
       - "MorningGlowAlarm-Windows11/package.json"
+      - ".github/workflows/build-windows.yml"
 
 jobs:
   build:
@@ -67,24 +68,36 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Verify version number changed
+      - name: Decide whether release is needed
         id: version
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           package_path='MorningGlowAlarm-Windows11/package.json'
           current=$(node -p "require('./MorningGlowAlarm-Windows11/package.json').version")
-          git show "${BEFORE_SHA}:${package_path}" > /tmp/previous-package.json
-          previous=$(node -p "require('/tmp/previous-package.json').version")
+          previous="$current"
+          if git cat-file -e "${BEFORE_SHA}:${package_path}" 2>/dev/null; then
+            git show "${BEFORE_SHA}:${package_path}" > /tmp/previous-package.json
+            previous=$(node -p "require('/tmp/previous-package.json').version")
+          fi
+
+          tag="v${current}"
+          expected_setup="Morning-Glow-Alarm-Setup-${current}-x64.exe"
+          expected_portable="Morning-Glow-Alarm-Portable-${current}-x64.exe"
+          release_assets=$(gh release view "$tag" --repo "${{ github.repository }}" --json assets --jq '.assets[].name' 2>/dev/null || true)
+
           echo "current=${current}" >> "$GITHUB_OUTPUT"
-          if [ "$current" = "$previous" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "Version unchanged; release upload will be skipped."
-          else
+          if [ "$current" != "$previous" ] \
+            || ! grep -Fxq "$expected_setup" <<< "$release_assets" \
+            || ! grep -Fxq "$expected_portable" <<< "$release_assets"; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Version changed from $previous to $current."
+            echo "Release $tag is new or incomplete; publishing verified builds."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Release $tag already contains both Windows builds."
           fi
 
       - name: Download verified Windows builds
@@ -104,8 +117,8 @@ jobs:
           set -euo pipefail
           tag="v${VERSION}"
           mapfile -d '' files < <(find release-assets -maxdepth 1 -type f -name '*.exe' -print0)
-          if [ "${#files[@]}" -eq 0 ]; then
-            echo "No Windows EXE files found"
+          if [ "${#files[@]}" -ne 2 ]; then
+            echo "Expected exactly two Windows EXE files, found ${#files[@]}"
             exit 1
           fi
 
