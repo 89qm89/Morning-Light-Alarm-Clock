@@ -10,6 +10,7 @@ on:
       - main
     paths:
       - "MorningGlowAlarm-Windows11/package.json"
+      - "MorningGlowAlarm-Windows11/CHANGELOG.md"
       - ".github/workflows/build-windows.yml"
 
 jobs:
@@ -106,6 +107,23 @@ jobs:
         with:
           name: Morning-Glow-Alarm-Windows
           path: release-assets
+      - name: Prepare release notes
+        if: steps.version.outputs.changed == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.current }}
+        run: |
+          set -euo pipefail
+          changelog='MorningGlowAlarm-Windows11/CHANGELOG.md'
+          awk -v version="$VERSION" '
+            $0 == "## " version { capture=1; next }
+            capture && /^## / { exit }
+            capture { print }
+          ' "$changelog" > release-notes.md
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "Missing release notes for version ${VERSION}"
+            exit 1
+          fi
 
       - name: Create or update release
         if: steps.version.outputs.changed == 'true'
@@ -123,11 +141,15 @@ jobs:
           fi
 
           if gh release view "$tag" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release edit "$tag" \
+              --repo "${{ github.repository }}" \
+              --title "晨光闹钟 $tag" \
+              --notes-file release-notes.md
             gh release upload "$tag" "${files[@]}" --clobber --repo "${{ github.repository }}"
           else
             gh release create "$tag" "${files[@]}" \
               --repo "${{ github.repository }}" \
               --target "${{ github.sha }}" \
               --title "晨光闹钟 $tag" \
-              --notes "自动构建的 Windows 正式版本，包含安装版和便携版。"
+              --notes-file release-notes.md
           fi
