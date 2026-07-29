@@ -9,6 +9,7 @@ const {
   Menu,
   nativeImage,
   screen,
+  shell,
   Tray
 } = require('electron');
 const { Store } = require('./store');
@@ -47,7 +48,7 @@ function createMainWindow() {
     show: false,
     frame: false,
     transparent: false,
-    backgroundColor: '#0b1020',
+    backgroundColor: '#090909',
     icon: assetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -172,7 +173,7 @@ function showRingWindow(alarm) {
     frame: false,
     alwaysOnTop: true,
     skipTaskbar: false,
-    backgroundColor: '#10162a',
+    backgroundColor: '#0b0b0b',
     icon: assetPath('icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -291,7 +292,7 @@ function registerIpc() {
     const allowed = {};
     if ('alwaysOnTop' in patch) allowed.alwaysOnTop = Boolean(patch.alwaysOnTop);
     if ('launchAtLogin' in patch) allowed.launchAtLogin = Boolean(patch.launchAtLogin);
-    if ('accent' in patch && ['violet', 'blue', 'rose'].includes(patch.accent)) {
+    if ('accent' in patch && ['violet', 'blue', 'rose', 'mono'].includes(patch.accent)) {
       allowed.accent = patch.accent;
     }
     store.patchSettings(allowed);
@@ -307,6 +308,19 @@ function registerIpc() {
       });
     }
     return broadcastState();
+  });
+
+  ipcMain.handle('app:info', () => ({
+    version: app.getVersion(),
+    packaged: app.isPackaged
+  }));
+
+  ipcMain.handle('app:open-external', async (_event, input) => {
+    const url = String(input || '');
+    const allowedPrefix = 'https://github.com/89qm89/Morning-Light-Alarm-Clock/releases';
+    if (!url.startsWith(allowedPrefix)) return false;
+    await shell.openExternal(url);
+    return true;
   });
 
   ipcMain.handle('window:widget', (_event, enabled) => setWidgetMode(Boolean(enabled)));
