@@ -10,7 +10,7 @@ const DEFAULT_DATA = {
     alwaysOnTop: false,
     launchAtLogin: false,
     widgetMode: false,
-    accent: 'mono'
+    accent: 'blue'
   }
 };
 
